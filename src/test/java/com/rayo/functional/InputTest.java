@@ -45,6 +45,16 @@ public class InputTest extends MohoBasedIntegrationTest {
         "</rule> " +
       "</grammar>";
 
+	public static String yesnoGrammar =
+		"<grammar xmlns=\"http://www.w3.org/2001/06/grammar\" root=\"yesno\">\n" +
+		"  <rule id=\"yesno\">\n" +
+		"    <one-of>\n" +
+		"      <item>yes</item>\n" +
+		"      <item>no</item>\n" +
+		"    </one-of>\n" +
+		"  </rule>\n" +
+		"</grammar>";
+
 	@Test
 	public void testInput() {
 
@@ -54,15 +64,6 @@ public class InputTest extends MohoBasedIntegrationTest {
 		assertNotNull(incoming);
 		incoming.answer();
 
-		String yesnoGrammar =
-			"<grammar xmlns=\"http://www.w3.org/2001/06/grammar\" root=\"yesno\">\n" +
-			"  <rule id=\"yesno\">\n" +
-			"    <one-of>\n" +
-			"      <item>yes</item>\n" +
-			"      <item>no</item>\n" +
-			"    </one-of>\n" +
-			"  </rule>\n" +
-			"</grammar>";
 		Input<Call> input = incoming.input(new InputCommand(new Grammar("application/srgs+xml", yesnoGrammar)));
 
 		String toSpeak =
@@ -171,8 +172,7 @@ public class InputTest extends MohoBasedIntegrationTest {
 	    assertNotNull(incoming);
 	    incoming.answer();
 
-
-	    InputCommand command = new InputCommand(new SimpleGrammar("yes,no"));
+	    InputCommand command = new InputCommand(new Grammar("application/srgs+xml", yesnoGrammar));
 	    command.setInitialTimeout(2000);
 	    Input<Call> input = incoming.input(command);
 
@@ -195,7 +195,7 @@ public class InputTest extends MohoBasedIntegrationTest {
 	    incoming.answer();
 
 
-	    InputCommand command = new InputCommand(new SimpleGrammar("yes,no"));
+	    InputCommand command = new InputCommand(new Grammar("application/srgs+xml", yesnoGrammar));
 	    command.setMinConfidence(1f);
 	    Input<Call> input = incoming.input(command);
 
@@ -218,7 +218,7 @@ public class InputTest extends MohoBasedIntegrationTest {
 	    incoming.answer();
 
 
-	    InputCommand command = new InputCommand(new SimpleGrammar("yes,no"));
+	    InputCommand command = new InputCommand(new Grammar("application/srgs+xml", yesnoGrammar));
 	    command.setMinConfidence(1f);
 	    Input<Call> input = incoming.input(command);
 	    Thread.sleep(100);
@@ -291,7 +291,7 @@ public class InputTest extends MohoBasedIntegrationTest {
 		    assertNotNull(incoming);
 		    incoming.answer();
 
-	    	InputCommand inputCommand = new InputCommand(new SimpleGrammar("yes,no"));
+			InputCommand inputCommand = new InputCommand(new Grammar("application/srgs+xml", yesnoGrammar));
 	    	inputCommand.setSpeechIncompleteTimeout(2000);
 
 	    	Input<Call> input = incoming.input(inputCommand);
