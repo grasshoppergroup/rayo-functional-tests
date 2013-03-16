@@ -75,9 +75,7 @@ public class InputTest extends MohoBasedIntegrationTest {
 			"         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
 			"         xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis\n" +
 			"                     http://www.w3.org/TR/speech-synthesis/synthesis.xsd\"\n" +
-			"         xml:lang=\"en-US\">\n" +
-			"    yes\n" +
-			"  </speak>\n" +
+			"         xml:lang=\"en-US\">yes</speak>\n" +
 			" ]]></document>\n";
 		outgoing.output(toSpeak);
 
@@ -142,11 +140,23 @@ public class InputTest extends MohoBasedIntegrationTest {
 
 	    Grammar grammar = new Grammar("application/srgs+xml", grxml);
 	    Input<Call> input = incoming.input(new InputCommand(grammar));
-	    outgoing.output("clue");
+		String toSpeak =
+			"<document content-type='application/ssml+xml'>\n" +
+			"  <![CDATA[<?xml version=\"1.0\"?>\n" +
+			"  <!DOCTYPE speak PUBLIC \"-//W3C//DTD SYNTHESIS 1.0//EN\"\n" +
+			"                   \"http://www.w3.org/TR/speech-synthesis/synthesis.dtd\">\n" +
+			"  <speak version=\"1.0\"\n" +
+			"         xmlns=\"http://www.w3.org/2001/10/synthesis\"\n" +
+			"         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+			"         xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis\n" +
+			"                     http://www.w3.org/TR/speech-synthesis/synthesis.xsd\"\n" +
+			"         xml:lang=\"en-US\">answer</speak>\n" +
+			" ]]></document>\n";
+		outgoing.output(toSpeak);
 
 	    InputCompleteEvent<?> complete = assertReceived(InputCompleteEvent.class, input);
 	    assertEquals(complete.getCause(), Cause.MATCH);
-	    assertEquals(complete.getInterpretation(),"clue");
+	    assertEquals(complete.getInterpretation(),"answer");
 
 	    outgoing.hangup();
 	    waitForEvents();
