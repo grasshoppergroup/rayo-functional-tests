@@ -11,7 +11,7 @@ import com.voxeo.moho.OutgoingCall;
 import com.voxeo.moho.event.InputCompleteEvent;
 import com.voxeo.moho.media.Input;
 import com.voxeo.moho.media.input.InputCommand;
-import com.voxeo.moho.media.input.SimpleGrammar;
+import com.voxeo.moho.media.output.OutputCommand;
 
 public class MiscTest extends MohoBasedIntegrationTest {
 
@@ -46,17 +46,17 @@ public class MiscTest extends MohoBasedIntegrationTest {
 	    assertNotNull(incoming);
 	    incoming.answer();
 	    
-	    Input<Call> input = incoming.input(new InputCommand(new SimpleGrammar("yes,no")));
+	    Input<Call> input = incoming.input(new InputCommand(createSRGSGrammar("yes,no")));
 	    outgoing.mute();
 	    waitForEvents(100);
-	    outgoing.output("yes");
+	    outgoing.output(new OutputCommand(createOutputDocument("yes")));
 	    
 	    waitForEvents();
 	    assertNotReceived(InputCompleteEvent.class, input);
 	    
 	    outgoing.unmute();
 	    waitForEvents(100);
-	    outgoing.output("yes");
+	    outgoing.output(new OutputCommand(createOutputDocument("yes")));
 	    
 	    waitForEvents();
 	    assertReceived(InputCompleteEvent.class, input);

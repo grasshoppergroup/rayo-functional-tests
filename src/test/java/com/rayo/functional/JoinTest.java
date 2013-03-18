@@ -22,7 +22,7 @@ import com.voxeo.moho.event.JoinCompleteEvent;
 import com.voxeo.moho.event.UnjoinCompleteEvent;
 import com.voxeo.moho.media.Input;
 import com.voxeo.moho.media.input.InputCommand;
-import com.voxeo.moho.media.input.SimpleGrammar;
+import com.voxeo.moho.media.output.OutputCommand;
 
 public class JoinTest extends MohoBasedIntegrationTest {
 
@@ -40,17 +40,17 @@ public class JoinTest extends MohoBasedIntegrationTest {
     assertReceived(MohoJoinCompleteEvent.class, incoming1);
     assertReceived(MohoJoinCompleteEvent.class, incoming2);
 
-    incoming1.input(new InputCommand(new SimpleGrammar("yes,no")));
-    incoming2.input(new InputCommand(new SimpleGrammar("yes,no")));
+    incoming1.input(new InputCommand(createSRGSGrammar("yes,no")));
+    incoming2.input(new InputCommand(createSRGSGrammar("yes,no")));
 
-    outgoing2.output("yes");
-    outgoing1.output("no");
+    outgoing2.output(new OutputCommand(createOutputDocument("yes")));
+    outgoing1.output(new OutputCommand(createOutputDocument("no")));
 
     MohoInputCompleteEvent<?> complete = assertReceived(MohoInputCompleteEvent.class, incoming1);
-    assertTrue(complete.getUtterance().equals("no"));
+    Assert.assertEquals("no", complete.getUtterance());
 
     complete = assertReceived(MohoInputCompleteEvent.class, incoming2);
-    assertTrue(complete.getUtterance().equals("yes"));
+    Assert.assertEquals("yes", complete.getUtterance());
 
     incoming1.hangup();
     incoming2.hangup();
@@ -168,14 +168,14 @@ public class JoinTest extends MohoBasedIntegrationTest {
     assertReceived(JoinCompleteEvent.class, incoming2);
 
     // Assert leg does receive media
-    Input<Call> input1 = outgoing1.input("yes,no");
-    outgoing2.output("yes");
+    Input<Call> input1 = outgoing1.input(new InputCommand(createSRGSGrammar("yes,no")));
+    outgoing2.output(new OutputCommand(createOutputDocument("yes")));
     waitForEvents();
     assertReceived(InputCompleteEvent.class, input1);
 
     // Asserts the other leg does not receive media
-    Input<Call> input2 = outgoing2.input("yes,no");
-    outgoing1.output("yes");
+    Input<Call> input2 = outgoing2.input(new InputCommand(createSRGSGrammar("yes,no")));
+    outgoing1.output(new OutputCommand(createOutputDocument("yes")));
     waitForEvents();
     assertNotReceived(InputCompleteEvent.class, input2);
 
@@ -226,14 +226,14 @@ public class JoinTest extends MohoBasedIntegrationTest {
     assertReceived(JoinCompleteEvent.class, incoming2);
 
     // Asserts the other leg does not receive media
-    Input<Call> input2 = outgoing2.input("yes,no");
-    outgoing1.output("yes");
+    Input<Call> input2 = outgoing2.input(new InputCommand(createSRGSGrammar("yes,no")));
+    outgoing1.output(new OutputCommand(createOutputDocument("yes")));
     waitForEvents();
     assertReceived(InputCompleteEvent.class, input2);
 
     // Assert leg does receive media
-    Input<Call> input1 = outgoing1.input("yes,no");
-    outgoing2.output("yes");
+    Input<Call> input1 = outgoing1.input(new InputCommand(createSRGSGrammar("yes,no")));
+    outgoing2.output(new OutputCommand(createOutputDocument("yes")));
     waitForEvents();
     assertNotReceived(InputCompleteEvent.class, input1);
 
@@ -364,7 +364,8 @@ public class JoinTest extends MohoBasedIntegrationTest {
     incoming1.join(incoming2, JoinType.DIRECT, Direction.DUPLEX);
 
     try {
-      incoming1.input("yes,no");
+
+      incoming1.input(new InputCommand(createSRGSGrammar("yes,no")));
       throw new AssertionError("Expected error");
     }
     catch (Exception e) {
@@ -372,7 +373,7 @@ public class JoinTest extends MohoBasedIntegrationTest {
     }
 
     try {
-      incoming1.input("hello");
+      incoming1.input(new InputCommand(createSRGSGrammar("hello")));
       throw new AssertionError("Expected error");
     }
     catch (Exception e) {
@@ -407,8 +408,8 @@ public class JoinTest extends MohoBasedIntegrationTest {
     incoming1.hangup();
 
     incoming2.join();
-    Input<Call> input = outgoing2.input("yes,no");
-    incoming2.output("yes");
+    Input<Call> input = outgoing2.input(new InputCommand(createSRGSGrammar("yes,no")));
+    incoming2.output(new OutputCommand(createOutputDocument("yes")));
     waitForEvents(2000);
     assertReceived(InputCompleteEvent.class, outgoing2);
 
@@ -438,8 +439,8 @@ public class JoinTest extends MohoBasedIntegrationTest {
       ex.printStackTrace();
     }
 
-    outgoing1.input("yes,no");
-    incoming2.output("yes");
+    outgoing1.input(new InputCommand(createSRGSGrammar("yes,no")));
+    incoming2.output(new OutputCommand(createOutputDocument("yes")));
     waitForEvents(4000);
     assertReceived(InputCompleteEvent.class, outgoing1);
 
@@ -452,8 +453,8 @@ public class JoinTest extends MohoBasedIntegrationTest {
       ex.printStackTrace();
     }
 
-    outgoing1.input("yes,no");
-    incoming2.output("yes");
+    outgoing1.input(new InputCommand(createSRGSGrammar("yes,no")));
+    incoming2.output(new OutputCommand(createOutputDocument("yes")));
     waitForEvents(4000);
     assertReceived(InputCompleteEvent.class, outgoing1);
 
@@ -476,38 +477,38 @@ public class JoinTest extends MohoBasedIntegrationTest {
     assertReceived(MohoJoinCompleteEvent.class, incoming1);
     assertReceived(MohoJoinCompleteEvent.class, incoming2);
 
-    incoming1.input(new InputCommand(new SimpleGrammar("yes,no")));
-    incoming2.input(new InputCommand(new SimpleGrammar("yes,no")));
+    incoming1.input(new InputCommand(createSRGSGrammar("yes,no")));
+    incoming2.input(new InputCommand(createSRGSGrammar("yes,no")));
 
     incoming1.hold();
-    outgoing1.output("no");
+    outgoing1.output(new OutputCommand(createOutputDocument("no")));
     waitForEvents();
     assertNotReceived(MohoInputCompleteEvent.class, incoming1);
-    
+
     incoming1.unhold();
-    outgoing1.output("no");
+    outgoing1.output(new OutputCommand(createOutputDocument("no")));
     waitForEvents();
 
     MohoInputCompleteEvent<?> complete = assertReceived(MohoInputCompleteEvent.class, incoming1);
-    assertTrue(complete.getUtterance().equals("no"));
+    Assert.assertEquals("no", complete.getUtterance());
 
     incoming1.hangup();
     incoming2.hangup();
     waitForEvents();
   }
-  
+
   @Test
   public void testOutboundHangupBeforeAnswer() {
     OutgoingCall outgoing1 = dial();
     IncomingCall incoming1 = getIncomingCall();
 
-    
+
     outgoing1.hangup();
-    
+
     waitForEvents(3000);
-    
-    Assert.assertEquals(outgoing1.getCallState(), Call.State.DISCONNECTED);
-    Assert.assertEquals(incoming1.getCallState(), Call.State.DISCONNECTED);
+
+    Assert.assertEquals(Call.State.DISCONNECTED, outgoing1.getCallState());
+    Assert.assertEquals(Call.State.DISCONNECTED, incoming1.getCallState());
 
     waitForEvents();
   }

@@ -20,7 +20,7 @@ import com.voxeo.moho.event.JoinCompleteEvent;
 import com.voxeo.moho.event.UnjoinCompleteEvent;
 import com.voxeo.moho.media.Input;
 import com.voxeo.moho.media.input.InputCommand;
-import com.voxeo.moho.media.input.SimpleGrammar;
+import com.voxeo.moho.media.output.OutputCommand;
 
 public class MultipleJoinTest extends MohoBasedIntegrationTest {
 
@@ -45,14 +45,14 @@ public class MultipleJoinTest extends MohoBasedIntegrationTest {
 	    call1.join(call2, JoinType.BRIDGE_SHARED, true, Direction.DUPLEX);
 	    call1.join(call3, JoinType.BRIDGE_SHARED, true, Direction.DUPLEX);
 	    	    
-	    InputCommand input = new InputCommand(new SimpleGrammar("yes,no"));
+	    InputCommand input = new InputCommand(createSRGSGrammar("yes,no"));
 	    Input<Call> input2 = outgoing2.input(input);
 	    Input<Call> input3 = outgoing3.input(input);
 	    
-	    outgoing1.output("yes");
+	    outgoing1.output(new OutputCommand(createOutputDocument("yes")));
 	    
 	    // This causes an exception
-	    // call1.output("yes");
+	    // call1.output(new OutputCommand(createOutputDocument("yes")));
 	    
 	    assertReceived(InputCompleteEvent.class, input2);
 	    assertReceived(InputCompleteEvent.class, input3);
@@ -204,8 +204,8 @@ public class MultipleJoinTest extends MohoBasedIntegrationTest {
 	    assertReceived(CallCompleteEvent.class, outgoing3);
 	    
 	    // Assert that incoming1 keeps working
-	    Input<Call> input = outgoing1.input("yes,no");
-	    outgoing2.output("yes");
+	    Input<Call> input = outgoing1.input(new InputCommand(createSRGSGrammar("yes,no")));
+	    outgoing2.output(new OutputCommand(createOutputDocument("yes")));
 	    waitForEvents();
 	    assertReceived(InputCompleteEvent.class, input);	    
 	    
@@ -319,8 +319,8 @@ public class MultipleJoinTest extends MohoBasedIntegrationTest {
 	    assertReceived(CallCompleteEvent.class, outgoing3);
 	    
 	    // Assert that incoming1 keeps working
-	    Input<Call> input = outgoing2.input("yes,no");
-	    outgoing1.output("yes");
+	    Input<Call> input = outgoing2.input(new InputCommand(createSRGSGrammar("yes,no")));
+	    outgoing1.output(new OutputCommand(createOutputDocument("yes")));
 	    waitForEvents();
 	    assertReceived(InputCompleteEvent.class, input);	    
 	    
@@ -360,8 +360,8 @@ public class MultipleJoinTest extends MohoBasedIntegrationTest {
 	    assertReceived(UnjoinCompleteEvent.class, incoming2);
 
 	    // Assert that incoming1 now talks to incoming3
-	    Input<Call> input = outgoing3.input("yes,no");
-	    outgoing1.output("yes");
+	    Input<Call> input = outgoing3.input(new InputCommand(createSRGSGrammar("yes,no")));
+	    outgoing1.output(new OutputCommand(createOutputDocument("yes")));
 	    waitForEvents();
 	    assertReceived(InputCompleteEvent.class, input);	    
 	    

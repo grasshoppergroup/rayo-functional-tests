@@ -15,6 +15,8 @@ import com.voxeo.moho.OutgoingCall;
 import com.voxeo.moho.Participant.JoinType;
 import com.voxeo.moho.event.ActiveSpeakerEvent;
 import com.voxeo.moho.event.InputCompleteEvent;
+import com.voxeo.moho.media.input.InputCommand;
+import com.voxeo.moho.media.output.OutputCommand;
 
 public class MixerTest extends MohoBasedIntegrationTest {
 
@@ -49,8 +51,8 @@ public class MixerTest extends MohoBasedIntegrationTest {
 			ex.printStackTrace();
 		}
 
-		outgoing1.input("yes,no");
-		mixer.output("yes");
+		outgoing1.input(new InputCommand(createSRGSGrammar("yes,no")));
+		mixer.output(new OutputCommand(createOutputDocument("yes")));
 		waitForEvents(4000);
 		assertReceived(InputCompleteEvent.class, outgoing1);
 
@@ -62,9 +64,9 @@ public class MixerTest extends MohoBasedIntegrationTest {
 			ex.printStackTrace();
 		}
 
-		outgoing1.input("yes,no");
-		outgoing2.input("yes,no");
-		mixer.output("yes");
+		outgoing1.input(new InputCommand(createSRGSGrammar("yes,no")));
+		outgoing2.input(new InputCommand(createSRGSGrammar("yes,no")));
+		mixer.output(new OutputCommand(createOutputDocument("yes")));
 		waitForEvents(4000);
 		assertReceived(InputCompleteEvent.class, outgoing1);
 		assertReceived(InputCompleteEvent.class, outgoing2);
@@ -95,7 +97,7 @@ public class MixerTest extends MohoBasedIntegrationTest {
 			ex.printStackTrace();
 		}
 
-		outgoing1.output("yes");
+		outgoing1.output(new OutputCommand(createOutputDocument("yes")));
 		waitForEvents(4000);
 		assertReceived(ActiveSpeakerEvent.class, mixer);
 

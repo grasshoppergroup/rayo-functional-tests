@@ -24,6 +24,7 @@ import com.voxeo.moho.OutgoingCall;
 import com.voxeo.moho.Participant;
 import com.voxeo.moho.common.event.MohoMediaCompleteEvent;
 import com.voxeo.moho.event.Event;
+import com.voxeo.moho.media.input.Grammar;
 import com.voxeo.moho.media.MediaOperation;
 import com.voxeo.moho.media.output.AudibleResource;
 import com.voxeo.moho.remote.MohoRemote;
@@ -51,6 +52,7 @@ public abstract class MohoBasedIntegrationTest {
 	protected List<String> sipDialUris = new ArrayList<String>();
 	protected String xmppServer;
 	protected String rayoServer;
+	protected String dtmfUriPrefix;
 
 	@Before
 	public void setup() {
@@ -93,6 +95,7 @@ public abstract class MohoBasedIntegrationTest {
     rayoServer = getProperty("rayo.server", "localhost");
     String[] uris = getProperty("sip.dial.uri", "sip:usera@localhost").split(",");
 		sipDialUris.addAll(Arrays.asList(uris));
+		dtmfUriPrefix = getProperty("dtmf.uri.prefix", "dtmf:");
 	}
 
 	protected String getProperty(String property, String defaultValue) {
@@ -371,7 +374,9 @@ public abstract class MohoBasedIntegrationTest {
 		return uri;
 	}
 
-
+	public String getDtmfUri(String digit) {
+		return dtmfUriPrefix + digit;
+	}
 
 	public String getXmppServer() {
 		return xmppServer;
@@ -388,4 +393,57 @@ public abstract class MohoBasedIntegrationTest {
 	public void setRayoServer(String rayoServer) {
 		this.rayoServer = rayoServer;
 	}
+
+        public String createOutputDocument(String text) {
+                return
+                        "<document content-type='application/ssml+xml'>\n" +
+                        "  <speak version=\"1.0\"\n" +
+                        "         xmlns=\"http://www.w3.org/2001/10/synthesis\"\n" +
+                        "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis\n" +
+                        "                     http://www.w3.org/TR/speech-synthesis/synthesis.xsd\"\n" +
+                        "         xml:lang=\"en-US\">" + text + "</speak>\n" +
+                        "</document>\n";
+        }
+
+        static final String digitsGrammarFormat =
+                "<grammar xmlns=\"http://www.w3.org/2001/06/grammar\" mode=\"dtmf\" root=\"digits\">\n" +
+                "  <rule id=\"digits\">\n" +
+                "    <item repeat=\"%i\"\n" +
+                "      <one-of>\n" +
+                "        <item>0</item>\n" +
+                "        <item>1</item>\n" +
+                "        <item>2</item>\n" +
+                "        <item>3</item>\n" +
+                "        <item>4</item>\n" +
+                "        <item>5</item>\n" +
+                "        <item>6</item>\n" +
+                "        <item>7</item>\n" +
+                "        <item>8</item>\n" +
+                "        <item>9</item>\n" +
+                "        <item>*</item>\n" +
+                "        <item>#</item>\n" +
+                "      </one-of>\n" +
+                "    </item>\n" +
+                "  </rule>\n" +
+                "</grammar>";
+
+        public Grammar createDigitsGrammar(int numDigits) {
+                return new Grammar("application/srgs+xml", String.format(digitsGrammarFormat, numDigits));
+        }
+
+        public Grammar createSRGSGrammar(String toMatch) {
+                String matchArray[] = toMatch.split(",");
+                StringBuilder grammarString = new StringBuilder();
+                grammarString.append("<grammar xmlns=\"http://www.w3.org/2001/06/grammar\" root=\"match\">\n");
+                grammarString.append("  <rule id=\"match\">\n");
+                grammarString.append("    <one-of>\n");
+                for (String match : matchArray) {
+                        grammarString.append("      <item>").append(match).append("</item>\n");
+                }
+                grammarString.append("      </one-of>\n");
+                grammarString.append("  </rule>\n");
+                grammarString.append("</grammar>");
+                return new Grammar("application/srgs+xml", grammarString.toString());
+        }
 }

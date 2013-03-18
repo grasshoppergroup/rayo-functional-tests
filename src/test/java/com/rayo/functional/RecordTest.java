@@ -17,6 +17,7 @@ import com.voxeo.moho.event.OutputCompleteEvent;
 import com.voxeo.moho.event.RecordCompleteEvent;
 import com.voxeo.moho.event.RecordCompleteEvent.Cause;
 import com.voxeo.moho.media.Output;
+import com.voxeo.moho.media.output.OutputCommand;
 import com.voxeo.moho.media.Recording;
 import com.voxeo.moho.media.record.RecordCommand;
 
@@ -33,7 +34,7 @@ public class RecordTest extends MohoBasedIntegrationTest {
 	    
 	    Recording<Call> recording = incoming.record(new RecordCommand(null));
 	    
-	    Output<Call> output = outgoing.output("Hello World");
+	    Output<Call> output = outgoing.output(new OutputCommand(createOutputDocument("Hello World")));
 	    waitForEvents();
 	    
 	    assertReceived(OutputCompleteEvent.class, output);
@@ -56,7 +57,7 @@ public class RecordTest extends MohoBasedIntegrationTest {
 	    
 	    Recording<Call> recording = incoming.record(new RecordCommand(null));
 	    
-	    Output<Call> output = outgoing.output("Hello World");
+	    Output<Call> output = outgoing.output(new OutputCommand(createOutputDocument("Hello World")));
 	    waitForEvents();
 	    assertReceived(OutputCompleteEvent.class, output);
 	    
