@@ -58,7 +58,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 		Output<Call> output = outgoing.output(new OutputCommand(createOutputDocument("yes")));
 		assertReceived(OutputCompleteEvent.class, output);
 		InputCompleteEvent<?> complete = assertReceived(InputCompleteEvent.class, input);
-		assertEquals(complete.getInterpretation(),"yes");
+		assertEquals("yes", complete.getInterpretation());
 
 		outgoing.hangup();
 		waitForEvents();
@@ -79,7 +79,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 
 		waitForEvents(6000);
 		OutputCompleteEvent<?> complete = assertReceived(OutputCompleteEvent.class, output);
-		assertEquals(complete.getCause(), Cause.END);
+		assertEquals(Cause.END, complete.getCause());
 
 		incoming.hangup();
 		waitForEvents();
@@ -101,7 +101,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 		outgoing.output(outputCommand);
 
 		InputCompleteEvent<?> complete = assertReceived(InputCompleteEvent.class, input);
-		assertEquals(complete.getInterpretation(),"one hundred");
+		assertEquals("one hundred", complete.getInterpretation());
 
 		incoming.hangup();
 		waitForEvents();
@@ -122,7 +122,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 		outgoing.output(outputCommand);
 
 		OutputCompleteEvent<Call> complete = assertReceived(OutputCompleteEvent.class, outgoing);
-		assertEquals(complete.getCause(), Cause.ERROR);
+		assertEquals(Cause.ERROR, complete.getCause());
 		//assertTrue(complete.getErrorText().contains("Could not find the Resource's URI"));
 
 		incoming.hangup();
@@ -146,7 +146,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 		waitForEvents();
 
 		OutputCompleteEvent<?> complete = assertReceived(OutputCompleteEvent.class, output);
-		assertEquals(complete.getCause(), Cause.ERROR);
+		assertEquals(Cause.ERROR, complete.getCause());
 
 		incoming.hangup();
 		waitForEvents();
@@ -173,7 +173,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 		output.stop();
 
 		OutputCompleteEvent<?> complete = assertReceived(OutputCompleteEvent.class, output);
-		assertEquals(complete.getCause(), Cause.CANCEL);
+		assertEquals(Cause.CANCEL, complete.getCause());
 
 		incoming.hangup();
 		waitForEvents();
@@ -194,7 +194,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 		output.move(true, 6000);
 		waitForEvents(1000);
 		OutputCompleteEvent<?> complete = assertReceived(OutputCompleteEvent.class, output);
-		assertEquals(complete.getCause(), Cause.END);
+		assertEquals(Cause.END, complete.getCause());
 
 		// Backward. Same as above but we move back before finishing up
 		output = incoming.output(new OutputCommand(createOutputDocument(audioURL)));
@@ -230,7 +230,7 @@ public class OutputTest extends MohoBasedIntegrationTest {
 
 		OutputCompleteEvent<?> complete = assertReceived(OutputCompleteEvent.class, output, 0);
 		long end = System.currentTimeMillis();
-		assertEquals(complete.getCause(), Cause.END);
+		assertEquals(Cause.END, complete.getCause());
 		assertTrue(end - init < 7000);
 
 		incoming.hangup();
@@ -298,11 +298,11 @@ public class OutputTest extends MohoBasedIntegrationTest {
 	    waitForEvents(1000);
 
 	    OutputCompleteEvent<?> complete1 = assertReceived(OutputCompleteEvent.class, output1, 1);
-	    assertEquals(complete1.getCause(), Cause.CANCEL);
+	    assertEquals(Cause.CANCEL, complete1.getCause());
 
 	    waitForEvents(1000);
 	    OutputCompleteEvent<?> complete2 = assertReceived(OutputCompleteEvent.class, output2, 1);
-	    assertEquals(complete2.getCause(), Cause.END);
+	    assertEquals(Cause.END, complete2.getCause());
 	    //BUG: RAYO-66 - A new output run over an existing output cancels both
 
 	    incoming.hangup();
@@ -368,8 +368,8 @@ public class OutputTest extends MohoBasedIntegrationTest {
 		}
 		Thread.sleep(100);
 		MohoCallCompleteEvent endOutgoing = assertReceived(MohoCallCompleteEvent.class, outgoing);
-		assertEquals(endOutgoing.getCause(), com.voxeo.moho.event.CallCompleteEvent.Cause.DECLINE);
+		assertEquals(com.voxeo.moho.event.CallCompleteEvent.Cause.DECLINE, endOutgoing.getCause());
 		MohoCallCompleteEvent endIncoming = assertReceived(MohoCallCompleteEvent.class, incoming);
-		assertEquals(endIncoming.getCause(), com.voxeo.moho.event.CallCompleteEvent.Cause.ERROR);
+		assertEquals(com.voxeo.moho.event.CallCompleteEvent.Cause.ERROR, endIncoming.getCause());
 	}
 }
